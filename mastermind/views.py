@@ -57,6 +57,7 @@ def detail(request, game_id):
 			"num_holes": 4,
 			"num_colors": 6,
 			"max_guesses": 12,
+			"num_guesses": 2,
 			"guesses": [
 				{
 					"id": 4,
@@ -84,6 +85,7 @@ def detail(request, game_id):
 			"num_holes": 4,
 			"num_colors": 6,
 			"max_guesses": 12,
+			"num_guesses": 2,
 			"guesses": [
 				{
 					"id": 4,

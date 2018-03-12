@@ -153,6 +153,7 @@ The response might be:
 	   "num_holes":4,
 	   "num_colors":6,
 	   "max_guesses":12,
+	   "num_guesses":7,
 	   "guesses":[  
 	      {  
 	         "id":20,

@@ -141,6 +141,7 @@ def game_to_dict(game):
 		'num_holes': game.num_holes,
 		'num_colors': game.num_colors,
 		'max_guesses': game.max_guesses,
+		'num_guesses': game.guess_set.count(),
 		'guesses': []
 	}
 
