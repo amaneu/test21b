@@ -43,7 +43,80 @@ def create_game(request):
 
 
 def detail(request, game_id):
-	return JsonResponse({})
+	"""Returns information for the game with the specified id.
+	Returns a JsonResponse with a Json string depending on the result. If the specified
+	game id corresponds to a game, a game description such as the following is returned.
+	Example: finished game, the codebreaker won:
+		{
+			"id": 2,
+			"started_at": xx,
+			"finished_at": xx,
+			"status": "FINISHED",
+			"winner": "CODEBREAKER",
+			"secret": [0, 3, 4, 1],
+			"num_holes": 4,
+			"num_colors": 6,
+			"max_guesses": 12,
+			"guesses": [
+				{
+					"id": 4,
+					"created_at": xx,
+					"guess": [0, 3, 1, 2],
+					"correct_position": 2
+					"correct_color": 1
+				},
+				{
+					"id": 5,
+					"created_at": xx,
+					"guess": [0, 3, 4, 1],
+					"correct_position": 4
+					"correct_color": 0
+				}				
+			]
+		}
+	Example: not finished game (note that the secret is not displayed):
+		{
+			"id": 2,
+			"started_at": xx,
+			"finished_at": null,
+			"status": "STARTED",
+			"winner": null,
+			"num_holes": 4,
+			"num_colors": 6,
+			"max_guesses": 12,
+			"guesses": [
+				{
+					"id": 4,
+					"created_at": xx,
+					"guess": [0, 3, 1, 2],
+					"correct_position": 2
+					"correct_color": 1
+				},
+				{
+					"id": 5,
+					"created_at": xx,
+					"guess": [0, 3, 2, 1],
+					"correct_position": 3
+					"correct_color": 0
+				}				
+			]
+		}
+	If the game does not exist, a Json string with the key "error" is returned, 
+	and the value is a description of the error.
+		{"error": "Could not find game with the specified ID"}
+	"""
+	if request.method != 'GET':
+		return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+	game = mastermind.get_game(game_id=game_id)
+
+	if game is None:
+		return JsonResponse({'error': 'Could not find game with the specified ID'}, status=404)
+
+	game_dict = mastermind.game_to_dict(game=game)
+
+	return JsonResponse(game_dict)
+
 
 def guess(request, game_id):
 	"""Makes a guess for the game with the specified id.

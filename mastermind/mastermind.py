@@ -31,6 +31,7 @@ def create_game(num_holes, num_colors, max_guesses):
 
 	return game
 
+
 def get_game(game_id):
 	"""Returns the Game instance with the specified id, or None if the game does not exist
 
@@ -42,6 +43,7 @@ def get_game(game_id):
 		return game
 	except:
 		return None
+
 
 def guess(game, guess_list):
 	"""Makes a Guess for the specified Game. 
@@ -122,3 +124,36 @@ def update_game_status(game):
 			game.winner = 'CODEMAKER'
 			game.finished_at = timezone.now()
 			game.save()
+
+
+def game_to_dict(game):
+	"""Returns a dictionary created from the specified game, in order to return it
+	to the user. The secret is not included unless the game has finished.
+
+	Keyword arguments:
+	game -- The Game instance for which to return the dictionary
+	"""
+	game_dict = {
+		'started_at': game.started_at,
+		'finished_at': game.finished_at,
+		'status': game.status,
+		'winner': game.winner,
+		'num_holes': game.num_holes,
+		'num_colors': game.num_colors,
+		'max_guesses': game.max_guesses,
+		'guesses': []
+	}
+
+	if (game.status == 'FINISHED'):
+		game_dict['secret'] = json.loads(game.secret)
+
+	for guess in game.guess_set.order_by('created_at'):
+		game_dict['guesses'].append({
+			'id': guess.id,
+			'created_at': guess.created_at,
+			'guess': json.loads(guess.guess),
+			'correct_position': guess.correct_position,
+			'correct_color': guess.correct_color
+		})
+
+	return game_dict
