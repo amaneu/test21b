@@ -1,0 +1,2 @@
+class InvalidGameParameter(Exception):
+	pass
