@@ -77,6 +77,14 @@ class MastermindTests(TestCase):
 			game = Game(status='STARTED', secret='[1, 2, 3, 4]', num_holes=4, num_colors=6, max_guesses=12)
 			guess = mastermind.guess(game, [2, 3])
 
+		with self.assertRaises(Exception):
+			game = Game(status='STARTED', secret='[1, 2, 3, 4]', num_holes=4, num_colors=6, max_guesses=12)
+			guess = mastermind.guess(game, [7, 7, 7, 7])
+
+		with self.assertRaises(Exception):
+			game = Game(status='STARTED', secret='[1, 2, 3, 4]', num_holes=4, num_colors=6, max_guesses=12)
+			guess = mastermind.guess(game, [-1, 0, 0, 0])
+
 
 	def test_return_none_on_nonexistent_game(self):
 		game = mastermind.get_game(-1)

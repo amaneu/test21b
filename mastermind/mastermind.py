@@ -61,7 +61,7 @@ def guess(game, guess_list):
 	if game.status == 'FINISHED':
 		raise exceptions.GameFinishedException('Game is already finished')
 
-	if len(guess_list) != game.num_holes or max(guess_list) >= game.num_colors:
+	if len(guess_list) != game.num_holes or max(guess_list) >= game.num_colors or min(guess_list) < 0:
 		raise exceptions.InvalidGuessException('Invalid guess')
 
 	secret_list = json.loads(game.secret)
