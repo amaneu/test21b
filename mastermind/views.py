@@ -42,8 +42,62 @@ def create_game(request):
 	return JsonResponse({'error': 'Could not create game'}, status=500)
 
 
-def detail(request):
+def detail(request, game_id):
 	return JsonResponse({})
 
-def guess(request):
-	return JsonResponse({})
+def guess(request, game_id):
+	"""Makes a guess for the game with the specified id.
+	The body must be a json string with the following format:
+		{"guess": [0, 1, 2, 3]}
+	where the the value for "guess" is an array with the numbers of this guess.
+	Returns a JsonResponse with a Json string depending on the result. If the specified
+	game id corresponds to a game and the guess is valid, the values for the correct number
+	of positions (black key peg) and correct number of colors (white key peg) are returned.
+		{"correct_position": 1, "correct_color": 2}
+	If the game has finished as a consequence of the guess, the game status and the winner
+	are returned:
+		{
+			"correct_position": 1, 
+			"correct_color": 2, 
+			"status": "FINISHED",
+			"winner": "CODEMAKER"
+		}
+	Otherwise, a Json string with the key "error" is returned, and the value is a description
+	of the error.
+		{"error": "Invalid guess"}
+	"""
+	if request.method != 'POST':
+		return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+	try:
+		request_dict = json.loads(request.body)
+	except Exception as ex:
+		return JsonResponse({'error': 'Invalid payload format: ' + repr(ex)}, status=400)
+
+	if not 'guess' in request_dict or not isinstance(request_dict['guess'], list):
+		return JsonResponse({'error': 'Must provide the guess as an array'}, status=400)
+
+	game = mastermind.get_game(game_id=game_id)
+
+	if game is None:
+		return JsonResponse({'error': 'Could not find game with the specified ID'}, status=404)
+
+	try:
+		guess = mastermind.guess(game=game, guess_list=request_dict['guess'])
+	except Exception as ex:
+		return JsonResponse({'error': 'Could not make guess: ' + repr(ex)}, status=400)
+
+	if guess is not None:
+		response_dict = {
+			'correct_position': guess.correct_position, 
+			'correct_color': guess.correct_color
+		}
+
+		# add information if the game has finished
+		if game.status == 'FINISHED':
+			response_dict['status'] = game.status
+			response_dict['winner'] = game.winner
+
+		return JsonResponse(response_dict)
+
+	return JsonResponse({'error': 'Could not make guess'}, status=500)
